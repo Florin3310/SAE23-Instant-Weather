@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instant Weather</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Instant Weather</h1>
+    <p>Consultez la météo instantanée de votre commune.</p>
+    <button id="dark-mode-toggle">Mode sombre</button>
+  </header>
+  <main>
+    <h1>Météo par commune</h1>
+    <form id="weather-form">
+      <label for="postal-code">Code postal :</label>
+      <input type="text" id="postal-code" required />
+      
+      <label for="commune-select">Commune :</label>
+      <select id="commune-select" required></select>
+
+      <button type="submit">Voir la météo</button>
+    </form>
+
+    <div id="weather-result"></div>
+    <script src="script.js"></script>
+  </main>
+  
+</body>
+</html>
