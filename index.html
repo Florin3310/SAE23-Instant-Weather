@@ -1,32 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instant Weather</title>
-  <link rel="stylesheet" href="CSS/style.css" />
+    <meta charset="UTF-8">
+    <title>Météo par Ville</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <h1>Instant Weather</h1>
-    <p>Consultez la météo instantanée de votre commune.</p>
-    <button id="dark-mode-toggle">Mode sombre</button>
-  </header>
-  <main>
-    <h1>Météo par commune</h1>
-    <form id="weather-form">
-      <label for="postal-code">Code postal :</label>
-      <input type="text" id="postal-code" required />
-      
-      <label for="commune-select">Commune :</label>
-      <select id="commune-select" required></select>
+    <div class="container">
+        <h1>Météo en France</h1>
+        <input type="text" id="villeInput" placeholder="Entrez une ville..." />
+        <button onclick="rechercherMeteo()">Voir la météo</button>
 
-      <button type="submit">Voir la météo</button>
-    </form>
+        <div id="meteoResult" class="meteo-card hidden">
+            <h2 id="villeNom"></h2>
+            <p><strong>Condition :</strong> <span id="condition"></span></p>
+            <p><strong>Température min :</strong> <span id="tmin"></span>°C</p>
+            <p><strong>Température max :</strong> <span id="tmax"></span>°C</p>
+            <p><strong>Pluie :</strong> <span id="pluie"></span>%</p>
+        </div>
+    </div>
 
-    <div id="weather-result"></div>
-    <script src="script.js"></script>
-  </main>
-  
+    <script src="js/main.js"></script>
 </body>
-</html>
+</html> 
