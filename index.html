@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Météo par Ville</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Météo en France</h1>
-        <input type="text" id="villeInput" placeholder="Entrez une ville..." />
-        <button onclick="rechercherMeteo()">Voir la météo</button>
+    <input type="text" id="villeInput" placeholder="Entrez une ville" />
+    <button onclick="rechercherMeteo()">Rechercher</button>
 
-        <div id="meteoResult" class="meteo-card hidden">
-            <h2 id="villeNom"></h2>
-            <p><strong>Condition :</strong> <span id="condition"></span></p>
-            <p><strong>Température min :</strong> <span id="tmin"></span>°C</p>
-            <p><strong>Température max :</strong> <span id="tmax"></span>°C</p>
-            <p><strong>Pluie :</strong> <span id="pluie"></span>%</p>
-        </div>
+    <div class="option">
+        <label><input type="checkbox" id="optionLat"> Latitude</label>
+        <label><input type="checkbox" id="optionLon"> Longitude</label>
+        <label><input type="checkbox" id="optionRain"> Cumul de pluie</label>
+        <label><input type="checkbox" id="optionWind"> Vent moyen</label>
+        <label><input type="checkbox" id="optionWindDir"> Direction du vent</label>
     </div>
 
-    <script src="js/main.js"></script>
+    <div id="meteoResult" class="hidden">
+        <p><strong>Ville :</strong> <span id="villeNom"></span></p>
+        <p><strong>Condition :</strong> <span id="condition"></span></p>
+        <p><strong>T° Min :</strong> <span id="tmin"></span>°C</p>
+        <p><strong>T° Max :</strong> <span id="tmax"></span>°C</p>
+        <p><strong>Probabilité de pluie :</strong> <span id="pluie"></span>%</p>
+
+        <p id="latRow" class="hidden"><strong>Latitude :</strong> <span id="lat"></span></p>
+        <p id="lonRow" class="hidden"><strong>Longitude :</strong> <span id="lon"></span></p>
+        <p id="rainRow" class="hidden"><strong>Cumul de pluie (mm) :</strong> <span id="rain"></span></p>
+        <p id="windRow" class="hidden"><strong>Vent moyen (km/h) :</strong> <span id="wind"></span></p>
+        <p id="windDirRow" class="hidden"><strong>Direction du vent :</strong> <span id="windDir"></span>°</p>
+    </div>
+
+    <script src="JS/main.js"></script>
 </body>
-</html> 
+</html>
