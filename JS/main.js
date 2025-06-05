@@ -21,21 +21,8 @@ function toggleTheme() {
   
   document.body.setAttribute('data-theme', newTheme);
   localStorage.setItem('theme', newTheme);
-  updateThemeIcon(newTheme);
 }
 
-function updateThemeIcon(theme) {
-  const sunIcon = themeToggle.querySelector('.sun-icon');
-  const moonIcon = themeToggle.querySelector('.moon-icon');
-  
-  if (theme === 'dark') {
-    sunIcon.style.display = 'block';
-    moonIcon.style.display = 'none';
-  } else {
-    sunIcon.style.display = 'none';
-    moonIcon.style.display = 'block';
-  }
-}
 
 villeInput.addEventListener("input", debounce(obtenirCommunes, 400));
 
