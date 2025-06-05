@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Météo par Ville</title>
-    <link rel="stylesheet" href="CSS/style.css">
+  <meta charset="UTF-8">
+  <title>Instant Weather</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <input type="text" id="villeInput" placeholder="Entrez une ville" />
-    <button onclick="rechercherMeteo()">Rechercher</button>
+  <div class="theme-toggle">
+    <button id="themeToggle" aria-label="Changer de thème">
+      <p>Mode d'affichage</p>
+    </button>
+  </div>
 
-    <div class="option">
-        <label><input type="checkbox" id="optionLat"> Latitude</label>
-        <label><input type="checkbox" id="optionLon"> Longitude</label>
-        <label><input type="checkbox" id="optionRain"> Cumul de pluie</label>
-        <label><input type="checkbox" id="optionWind"> Vent moyen</label>
-        <label><input type="checkbox" id="optionWindDir"> Direction du vent</label>
-    </div>
+  <h1>Instant Weather</h1>
+  <p class="slogan">La météo n'a jamais été aussi accessible</p>
 
-    <div id="meteoResult" class="hidden">
-        <p><strong>Ville :</strong> <span id="villeNom"></span></p>
-        <p><strong>Condition :</strong> <span id="condition"></span></p>
-        <p><strong>T° Min :</strong> <span id="tmin"></span>°C</p>
-        <p><strong>T° Max :</strong> <span id="tmax"></span>°C</p>
-        <p><strong>Probabilité de pluie :</strong> <span id="pluie"></span>%</p>
+  <div class="search">
+    <input type="text" id="ville" placeholder="Nom de ville ou code postal">
+    <select id="selectVille">
+      <option value="">-- Sélectionnez une ville --</option>
+    </select>
+    <select id="nbJours">
+      <option value="1">1 jour</option>
+      <option value="3">3 jours</option>
+      <option value="5">5 jours</option>
+      <option value="7">7 jours</option>
+      <option value="10">10 jours</option>
+    </select>
+    <button id="btnRechercher" disabled>Afficher la météo</button>
+  </div>
 
-        <p id="latRow" class="hidden"><strong>Latitude :</strong> <span id="lat"></span></p>
-        <p id="lonRow" class="hidden"><strong>Longitude :</strong> <span id="lon"></span></p>
-        <p id="rainRow" class="hidden"><strong>Cumul de pluie (mm) :</strong> <span id="rain"></span></p>
-        <p id="windRow" class="hidden"><strong>Vent moyen (km/h) :</strong> <span id="wind"></span></p>
-        <p id="windDirRow" class="hidden"><strong>Direction du vent :</strong> <span id="windDir"></span>°</p>
-    </div>
+  <div class="options">
+    <label><input type="checkbox" id="optLatLng"> Latitude / Longitude</label>
+    <label><input type="checkbox" id="optPluie"> Cumul de pluie</label>
+    <label><input type="checkbox" id="optVent"> Vent moyen</label>
+    <label><input type="checkbox" id="optVentDir"> Direction du vent</label>
+  </div>
 
-    <script src="JS/main.js"></script>
+  <div id="resultat"></div>
+
+  <script src="js/main.js"></script>
 </body>
 </html>

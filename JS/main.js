@@ -2,112 +2,156 @@ const apiKey = "5d1f8c4cbc841dfcb1e53129568d86a6d1041cc04d7e62938f96d1a05c52299b
 const meteoBaseUrl = "https://api.meteo-concept.com/api";
 const geoBaseUrl = "https://geo.api.gouv.fr/communes";
 
-const cpInput = document.getElementById("cpInput");
-const villeSelect = document.getElementById("villeSelect");
-const previsionsContainer = document.getElementById("previsionsContainer");
-const meteoResult = document.getElementById("meteoResult");
+const villeInput = document.getElementById("ville");
+const selectVille = document.getElementById("selectVille");
+const nbJoursSelect = document.getElementById("nbJours");
+const btnRechercher = document.getElementById("btnRechercher");
+const themeToggle = document.getElementById("themeToggle");
+let villesTrouvees = [];
 
-const joursSemaine = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-const mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.body.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
 
+function toggleTheme() {
+  const currentTheme = document.body.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  document.body.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
 
-cpInput.addEventListener("input", async (e) => {
-  const input = e.target.value.trim();
-  if (input.length < 3) {
-    villeSelect.classList.add("hidden");
-    villeSelect.innerHTML = "";
-    meteoResult.classList.add("hidden");
-    return;
+function updateThemeIcon(theme) {
+  const sunIcon = themeToggle.querySelector('.sun-icon');
+  const moonIcon = themeToggle.querySelector('.moon-icon');
+  
+  if (theme === 'dark') {
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
+  } else {
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
   }
+}
 
-  const isPostal = /^\d{5}$/.test(input);
-  const url = `${geoBaseUrl}?${isPostal ? "codePostal" : "nom"}=${encodeURIComponent(input)}&fields=nom,code,centre`;
+villeInput.addEventListener("input", debounce(obtenirCommunes, 400));
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
+selectVille.addEventListener("change", () => {
+  btnRechercher.disabled = selectVille.value === "";
+});
 
-    if (data.length) {
-      villeSelect.innerHTML = data.map(c => `<option value='${JSON.stringify(c)}'>${c.nom}</option>`).join("");
-      villeSelect.classList.remove("hidden");
-      meteoResult.classList.remove("hidden"); 
-    } else {
-      villeSelect.classList.add("hidden");
-      villeSelect.innerHTML = "";
-      meteoResult.classList.add("hidden");
-    }
-  } catch {
-    alert("Erreur lors de la récupération des villes.");
+btnRechercher.addEventListener("click", () => {
+  if (villesTrouvees.length && selectVille.value !== "") {
+    afficherMeteo(villesTrouvees[selectVille.value], parseInt(nbJoursSelect.value));
   }
 });
 
-// API 
-async function getMeteoByCodeInsee(codeInsee) {
-  const url = `${meteoBaseUrl}/forecast/daily?token=${apiKey}&insee=${codeInsee}`;
-  const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-  const data = await res.json();
-  return data.forecast;
+themeToggle.addEventListener("click", toggleTheme);
+
+document.addEventListener('DOMContentLoaded', initTheme);
+
+function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
 }
 
+async function obtenirCommunes() {
+  const recherche = villeInput.value.trim();
+  const resultatDiv = document.getElementById("resultat");
+  resultatDiv.innerHTML = "";
+  selectVille.innerHTML = "<option value=''>-- Sélectionnez une ville --</option>";
+  villesTrouvees = [];
+  btnRechercher.disabled = true;
 
-function toggleOption(id, rowId, spanId, value) {
-  const checkbox = document.getElementById(id);
-  const row = document.getElementById(rowId);
-  const span = document.getElementById(spanId);
-  if (!checkbox || !row || !span) return;
-  row.classList.toggle("hidden", !checkbox.checked);
-  if (checkbox.checked) span.textContent = value;
-}
+  if (!recherche) return;
 
-
-async function rechercherMeteo() {
-  if (villeSelect.classList.contains("hidden") || !villeSelect.value) {
-    alert("Veuillez sélectionner une ville.");
-    return;
-  }
-
-  const commune = JSON.parse(villeSelect.value);
-  const [lon, lat] = commune.centre.coordinates;
+  const isCodePostal = /^\d{5}$/.test(recherche);
+  const geoUrl = isCodePostal
+    ? `${geoBaseUrl}?codePostal=${recherche}&fields=code,nom,centre&format=json`
+    : `${geoBaseUrl}?nom=${encodeURIComponent(recherche)}&fields=code,nom,centre&format=json`;
 
   try {
-    const meteoList = await getMeteoByCodeInsee(commune.code);
-    const meteo = meteoList[0];
+    const response = await fetch(geoUrl);
+    const villes = await response.json();
 
-    document.getElementById("villeNom").textContent = commune.nom;
-    document.getElementById("condition").textContent = meteo.weather;
-    document.getElementById("tmin").textContent = meteo.tmin;
-    document.getElementById("tmax").textContent = meteo.tmax;
-    document.getElementById("pluie").textContent = meteo.probarain;
-
-    toggleOption("optionLat", "latRow", "lat", lat);
-    toggleOption("optionLon", "lonRow", "lon", lon);
-    toggleOption("optionRain", "rainRow", "rain", meteo.rr1);
-    toggleOption("optionWind", "windRow", "wind", meteo.wind10m);
-    toggleOption("optionWindDir", "windDirRow", "windDir", meteo.dirwind10m);
-
-    previsionsContainer.innerHTML = "";
-
-    for (let i = 1; i < meteoList.length; i++) {
-      const m = meteoList[i];
-      const d = new Date(m.datetime);
-      const dateStr = `${joursSemaine[d.getDay()]} ${d.getDate()} ${mois[d.getMonth()]}`;
-
-      const html = `
-        <div class="meteo-card">
-          <h4>${dateStr}</h4>
-          <p><strong>Conditions :</strong> ${m.weather}</p>
-          <p><strong>Températures :</strong> ${m.tmin}°C - ${m.tmax}°C</p>
-          <p><strong>Probabilité pluie :</strong> ${m.probarain}%</p>
-          <p><strong>Cumul pluie :</strong> ${m.rr1 ?? "N/A"} mm</p>
-          <p><strong>Vent moyen :</strong> ${m.wind10m ?? "N/A"} km/h</p>
-          <p><strong>Direction vent :</strong> ${m.dirwind10m ?? "N/A"}°</p>
-          <p><strong>Latitude :</strong> ${lat}</p>
-          <p><strong>Longitude :</strong> ${lon}</p>
-        </div>
-      `;
-      previsionsContainer.insertAdjacentHTML("beforeend", html);
+    if (!villes.length) {
+      selectVille.innerHTML = "<option value=''>Aucune ville trouvée</option>";
+      return;
     }
-  } catch {
-    alert("Erreur lors de la récupération de la météo.");
+
+    villesTrouvees = villes;
+    villes.forEach((v, i) => {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `${v.nom} (${v.code})`;
+      selectVille.appendChild(option);
+    });
+
+    btnRechercher.disabled = false;
+  } catch (err) {
+    console.error(err);
+    selectVille.innerHTML = "<option value=''>Erreur de recherche</option>";
   }
+}
+
+async function afficherMeteo(villeChoisie, nbJours) {
+  const resultatDiv = document.getElementById("resultat");
+  const showLatLng = document.getElementById("optLatLng").checked;
+  const showPluie = document.getElementById("optPluie").checked;
+  const showVent = document.getElementById("optVent").checked;
+  const showVentDir = document.getElementById("optVentDir").checked;
+
+  const codeInsee = villeChoisie.code;
+  const nomVille = villeChoisie.nom;
+  const latitude = villeChoisie.centre.coordinates[1];
+  const longitude = villeChoisie.centre.coordinates[0];
+
+  try {
+    const meteoResponse = await fetch(`${meteoBaseUrl}/forecast/daily?insee=${codeInsee}&token=${apiKey}`);
+    const meteoData = await meteoResponse.json();
+    const previsions = meteoData.forecast.slice(0, nbJours);
+
+    resultatDiv.innerHTML = previsions.map(jour => `
+      <div class="card">
+        <h3>${nomVille} - ${jour.datetime}</h3>
+        <p><strong>Temps :</strong> ${getWeatherDesc(jour.weather)}</p>
+        <p><strong>Température :</strong> ${jour.tmin}°C ➜ ${jour.tmax}°C</p>
+        ${showPluie ? `<p><strong>Pluie :</strong> ${jour.rr10} mm</p>` : ""}
+        ${showVent ? `<p><strong>Vent :</strong> ${jour.wind10m} km/h</p>` : ""}
+        ${showVentDir ? `<p><strong>Direction du vent :</strong> ${getWindDir(jour.wind10m_direction)}</p>` : ""}
+        ${showLatLng ? `<p><strong>Latitude / Longitude :</strong> ${latitude.toFixed(4)} / ${longitude.toFixed(4)}</p>` : ""}
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    resultatDiv.innerHTML = "<p>Erreur lors de la récupération des prévisions météo.</p>";
+  }
+}
+
+function getWeatherDesc(code) {
+  const descriptions = {
+    0: "Soleil", 1: "Peu nuageux", 2: "Ciel voilé", 3: "Nuageux", 4: "Très nuageux", 5: "Couvert", 6: "Brouillard",
+    7: "Brouillard givrant", 10: "Pluie faible", 11: "Pluie modérée", 12: "Pluie forte",
+    13: "Pluie faible verglaçante", 14: "Pluie modérée verglaçante", 15: "Pluie forte verglaçante",
+    20: "Neige faible", 21: "Neige modérée", 22: "Neige forte",
+    30: "Pluie et neige mêlées faibles", 31: "Pluie et neige mêlées modérées", 32: "Pluie et neige mêlées fortes",
+    40: "Averses de pluie faibles", 41: "Averses de pluie modérées", 42: "Averses de pluie fortes",
+    43: "Averses de neige faibles", 44: "Averses de neige modérées", 45: "Averses de neige fortes",
+    46: "Averses pluie/neige mêlées faibles", 47: "modérées", 48: "fortes",
+    60: "Orages faibles", 61: "Orages modérés", 62: "Orages forts",
+    63: "Orage + pluie faible", 64: "Orage + pluie modérée", 65: "Orage + pluie forte"
+  };
+  return descriptions[code] || "Inconnu";
+}
+
+function getWindDir(code) {
+  if (typeof code !== "number") return "Inconnu";
+  const directions = ["Nord", "Nord-Est", "Est", "Sud-Est", "Sud", "Sud-Ouest", "Ouest", "Nord-Ouest"];
+  return directions[Math.floor((code % 360) / 45)] || "Inconnu";
 }

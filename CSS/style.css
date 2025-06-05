@@ -1,86 +1,285 @@
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(135deg, #dbe4f0, #f7f7f7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #334155;
+  --border: #475569;
+  --border-light: #64748b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --radius: 8px;
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+[data-theme="light"] {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+* {
+  box-sizing: border-box;
   margin: 0;
-  backdrop-filter: blur(10px);
+  padding: 0;
 }
 
-.container {
-  background: rgba(255, 255, 255, 0.6);
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  width: 340px;
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-main);
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+
+#themeToggle {
+  width: 8.5rem;
+  height: 2.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 15%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+#themeToggle:hover {
+  background: var(--bg-input);
+  transform: scale(1.05);
+}
+
+
+h1 {
   text-align: center;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.container h1 {
-  font-size: 24px;
+  font-size: 3rem;
   font-weight: 600;
-  color: #1c1c1e;
-  margin-bottom: 20px;
+  color: var(--text-primary);
+  margin-bottom: 3rem;
+  letter-spacing: -0.025em;
 }
 
-input {
-  padding: 12px 14px;
-  font-size: 16px;
-  width: 100%;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.6);
+.slogan {
   text-align: center;
-  color: #1c1c1e;
-  transition: border-color 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
 }
 
-input:focus {
+.search, .options {
+  max-width: 56rem;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.search {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+input[type="text"], select {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, select:focus {
   outline: none;
-  border-color: #007aff;
-  background-color: rgba(255, 255, 255, 0.8);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.2);
+}
+
+input[type="text"]::placeholder {
+  color: var(--text-muted);
+}
+
+select option {
+  background: var(--bg-input);
+  color: var(--text-primary);
 }
 
 button {
-  padding: 12px;
-  background-color: #007aff;
-  color: white;
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--primary);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius);
   cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-light);
+}
+
+button:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--primary);
+}
+
+#resultat {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card h3 {
+  font-size: 1.125rem;
   font-weight: 600;
-  font-size: 16px;
-  transition: background-color 0.2s ease;
-  width: 100%;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
 }
 
-button:hover {
-  background-color: #005fd1;
+.card p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
 }
 
-.meteo-card {
-  margin-top: 24px;
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
-  text-align: center;
-  font-size: 15px;
-  color: #1c1c1e;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.card p:last-child {
+  margin-bottom: 0;
 }
 
-.meteo-card p {
-  margin: 8px 0;
+.card p strong {
+  color: var(--text-primary);
+  font-weight: 500;
+  min-width: 140px;
 }
 
-.hidden {
-  display: none;
+
+@media (max-width: 768px) {
+  body {
+    padding: 1rem 0.5rem;
+  }
+  
+  .theme-toggle {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  h1 {
+    font-size: 1.875rem;
+    margin-bottom: 2rem;
+  }
+  
+  .search {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .search, .options {
+    padding: 1rem;
+  }
+  
+  .options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+  
+  .card p {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .card p strong {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .search, .options {
+    margin-bottom: 1.5rem;
+  }
 }
